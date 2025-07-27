@@ -2,6 +2,8 @@
 
 
 
+using DomainLayer.Models;
+
 namespace Service
 {
     public class AuthenticationService(UserManager<IdentityUser> _userManager, IConfiguration _configuration, IMapper _mapper) : IAuthenticationService
@@ -17,18 +19,17 @@ namespace Service
                 return new UserDto
                 {
                     Email = User.Email,
-                    Token = await CreateTokenAsync(User)
+                    Username = User.UserName,
+                    Token = await CreateTokenAsync(User),
                 };
             else
                 throw new UnauthorizedException();
         }
         public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
         {
-            // Check if email already exists
             if (await _userManager.FindByEmailAsync(registerDto.Email) is not null)
                 throw new BadRequestException(new List<string> { "Email is already registered" });
 
-            // Check if username already exists
             if (await _userManager.FindByNameAsync(registerDto.UserName) is not null)
                 throw new BadRequestException(new List<string> { "Username is already taken" });
 
@@ -52,7 +53,6 @@ namespace Service
                 };
                 await _userManager.AddToRoleAsync(identityUser, "Customer");
 
-                // Return the UserDto
                 return new UserDto
                 {
                     Email = identityUser.Email,
@@ -66,6 +66,8 @@ namespace Service
                 throw new BadRequestException(errors);
             }
         }
+
+
 
 
         // JWT Authentication

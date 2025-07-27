@@ -13,11 +13,6 @@ namespace Persistence
             Services.AddScoped<IDataSeeding, DataSeeding>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            //In-memory database Configuration (Redis)
-            Services.AddSingleton<IConnectionMultiplexer>((_) =>
-            {
-                return ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnectionString"));
-            });
 
             //OrderManagementDbContext Configuration
             Services.AddDbContext<OrderManagementDbContext>(Options =>
